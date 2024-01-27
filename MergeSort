@@ -1,0 +1,62 @@
+MergeSort
+
+#include <iostream>
+void merge(int *arr, int start, int middle, int end) {
+  int indexL = 0;
+  int indexR = 0;
+  int indexMerge = start;
+  int leftSize = middle - start + 1;
+  int rightSize = end - middle;
+  int* leftArr = new int[leftSize];
+  int* rightArr = new int[rightSize];
+  for (int i = 0; i < leftSize; i++)
+    leftArr[i] = arr[start + i];
+  for (int i = 0; i < rightSize; i++)
+    rightArr[i] = arr[i + middle + 1];
+  while (indexL < leftSize && indexR < rightSize) {
+    if (leftArr[indexL] <= rightArr[indexR]) {
+      arr[indexMerge] = leftArr[indexL];
+      ++indexL;
+    }
+    else {
+      arr[indexMerge] = rightArr[indexR];
+      ++indexR;
+    }
+    ++indexMerge;
+  }
+  while (indexL < leftSize) {
+    arr[indexMerge] = leftArr[indexL];
+    ++indexL;
+    ++indexMerge;
+  }
+  while (indexR < rightSize) {
+    arr[indexMerge] = rightArr[indexR];
+    ++indexR;
+    ++indexMerge;
+  }
+  delete[] leftArr;
+  delete[] rightArr;
+}
+
+void recursiveMergeSort(int* arr, int start, int end) {
+  if (start < end) {
+    int middle = start + (end - start) / 2;
+    recursiveMergeSort(arr, start, middle);
+    recursiveMergeSort(arr, middle + 1, end);
+    merge(arr, start, middle, end);
+  }
+}
+
+void mergeSort(int* arr, int size) {
+  recursiveMergeSort(arr, 0, size - 1);
+}
+
+int main() {
+  int n = 8;
+  int *arr1 = new int[n]{1, 21, 5, 13, 7, 20, 2, 23};
+    mergeSort(arr1, n);
+  for (int i  = 0; i < n; i++) {
+      std::cout << arr1[i] << " ";
+    }
+  delete[] arr1;
+}
