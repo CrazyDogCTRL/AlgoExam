@@ -1,0 +1,145 @@
+Heap
+
+#include <iostream>
+#include <cstdlib>
+
+
+class Heap {
+public:
+  int size;
+  int* arr = new int[size];
+  ~Heap() {
+    delete[] arr;
+  }
+  
+  Heap(int s) : size(s) {
+      FillArray();
+      BuildHeap();
+      capacity_ = s;
+  }
+
+  void HeapSort();
+  void Print();
+  void Push(int elem);
+  
+private:
+  int capacity_;
+  void FillArray();
+  void SiftDown(int* arr, int n, int id);
+  void ExtractMax(int &size);
+  void Resize(int* &arr, int n);
+  template <typename T>
+  void Swap(T &a, T &b);
+  void BuildHeap();
+  void SiftUp(int* arr, int id);
+};
+
+int main() {
+  std::ios_base::sync_with_stdio(false);
+  std::cin.tie(nullptr);
+  std::cout.tie(nullptr);
+  Heap heap(5);
+  heap.Print();
+  std::cout << "\n";
+  heap.HeapSort();
+  heap.Print();
+  std::cout << "\n";
+  heap.Push(-5);
+  heap.Print();
+  std::cout << "\n";
+  heap.Push(323);
+  heap.Print();
+  std::cout << "\n";
+  heap.HeapSort();
+  heap.Print();
+}
+
+
+
+
+void Heap::BuildHeap() {
+  for (int i = size / 2 - 1; i >= 0; i--) {
+    SiftDown(arr, size, i);
+  }
+}
+
+void Heap::SiftUp (int* arr, int id) {
+  while (id > 0) {
+    int id_parent = (id -  1) / 2;
+    if (arr[id_parent] < arr[id]) {
+      Swap(arr[id_parent], arr[id]);
+      id = id_parent;
+    }
+    else {
+      break;
+    }
+  }
+}
+
+void Heap::SiftDown(int* arr, int n, int id) {
+  while (id < n) {
+    int id_left = id * 2 + 1;
+    int id_right = id * 2 + 2;
+    int id_max = id;
+    if (id_left < n && (arr[id_max] < arr[id_left]))
+      id_max = id_left;
+    if ((id_right < n) && (arr[id_max] < arr[id_right]))
+      id_max = id_right;
+    if (arr[id] != arr[id_max]) {
+      Swap(arr[id], arr[id_max]);
+      id = id_max;
+    }
+    else
+      break;
+  }
+}
+
+void Heap::ExtractMax(int &size) {
+  Swap(arr[0], arr[size - 1]);
+  size--;
+  SiftDown(arr, size, 0);
+}
+
+void Heap::Resize(int* &arr, int n) {
+  int* newArr = new int[capacity_ * 2];
+  for (int i = 0; i < n; i++) {
+    newArr[i] = arr[i];
+  }
+  arr = newArr;
+  capacity_ *= 2;
+}
+
+void Heap::Push(int elem) {
+  if (size >= capacity_) {
+    Resize(arr, size);
+  }
+  arr[size] = elem;
+  SiftUp(arr, size);
+  size++;
+}
+
+template <typename T>
+void Heap::Swap(T &a, T &b) {
+  T c = a;
+  a = b;
+  b = c;
+}
+
+void Heap::FillArray() {
+  for (int i = 0; i < size; i++) {
+    arr[i] = rand() % 1000;
+  }
+}
+
+void Heap::HeapSort() {
+  int n = size;
+  while (n > 0) {
+    ExtractMax(n);
+  }
+}
+
+void Heap::Print() {
+  for (int i = 0; i < size; i++) {
+    std::cout << arr[i] << " ";
+  }
+}
