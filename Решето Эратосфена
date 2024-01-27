@@ -1,0 +1,20 @@
+//Решето Эратосфена
+#include <iostream>
+int main() {
+  const long long int n = 100000;
+  int primes[n]{};
+  for (int i = 2; i < n; i++) {
+    int k = 2;
+    if (primes[i] == 0) {
+      while (k * i < n) {
+        primes[k * i] = 1;
+        k++;
+      }
+    }
+  }
+  for (int i = 2; i < n; i++) {
+    if (primes[i] == 0) {
+      std::cout << i << "\n";
+    }
+  }
+}
