@@ -1,0 +1,223 @@
+Treap
+
+#include <iostream>
+#include <utility>
+#include <random>
+
+template <typename T>
+class Treap {
+public:
+  Treap();
+  ~Treap();
+  void Push(T data);
+  T FindMax();
+  T FindMin();
+  bool Search(T data);
+  void RemoveAt(T data);
+private:
+  class Node {
+  public:
+    Node* pleft;
+    Node* pright;
+    T data;
+    int priority;
+    Node(T data = T(), int priority = 0, Node* pleft = nullptr, Node* pright = nullptr) {
+      this->data = data;
+      this->priority = priority;
+      this->pleft = pleft;
+      this->pright = pright;
+    }
+  };
+  Node* root;
+  Node* SearchNode(T data);
+  Node* SearchParent(T data);
+  void DestroyTree(Node* node);
+  std::pair<Node*, Node*> Split(Node* node, T data);
+  Node* Merge(Node* left, Node* right);
+};
+
+template <typename T>
+Treap<T>::Treap() {
+  root =  nullptr;
+}
+
+template <typename T>
+void Treap<T>::Push(T data) {
+  int priority = rand();
+  Node* newNode = new Node(data, priority);
+  if (root == nullptr) {
+    root = newNode;
+  }
+  else {
+    auto [left, right] = Split(root, data);
+    root = Merge(Merge(left, newNode), right);
+  }
+}
+
+template <typename T>
+std::pair<typename Treap<T>::Node*, typename Treap<T>::Node*> Treap<T>::Split(Node* node, T data) {
+  if (node == nullptr) {
+    return std::make_pair(nullptr, nullptr);
+  }
+  if (data > node->data) {
+    auto rightSplit = Split(node->pright, data);
+    node->pright = rightSplit.first;
+    return std::make_pair(node, rightSplit.second);
+  } else {
+    auto leftSplit = Split(node->pleft, data);
+    node->pleft = leftSplit.second;
+    return std::make_pair(leftSplit.first, node);
+  }
+}
+
+template <typename T>
+typename Treap<T>::Node* Treap<T>::Merge(Node* left, Node* right) {
+  if (left == nullptr) {
+    return right;
+  }
+  if (right == nullptr) {
+    return left;
+  }
+  if (left->priority > right->priority) {
+    left->pright = Merge(left->pright, right);
+    return left;
+  } else {
+    right->pleft = Merge(left, right->pleft);
+    return right;
+  }
+}
+
+template <typename T>
+T Treap<T>::FindMax() {
+  Node* node = root;
+  while (true) {
+    if (node->pright != nullptr)
+      node = node->pright;
+    else
+      return node->data;
+  }
+}
+
+template <typename T>
+T Treap<T>::FindMin() {
+  Node* node = root;
+  while (true) {
+    if (node->pleft != nullptr)
+      node = node->pleft;
+    else
+      return node->data;
+  }
+}
+
+template <typename T>
+bool Treap<T>::Search(T data) {
+  Node* node = root;
+  while(node != nullptr) {
+    if (data > node->data)
+      node = node->pright;
+    else if (data < node->data)
+      node = node->pleft;
+    else if (data == node->data)
+      return true;
+  }
+  return false;
+}
+
+template <typename T>
+typename Treap<T>::Node* Treap<T>::SearchNode(T data) {
+  Node* node = root;
+  while(node != nullptr) {
+    if (data > node->data)
+      node = node->pright;
+    else if (data < node->data)
+      node = node->pleft;
+    else if (data == node->data)
+      return node;
+  }
+  return nullptr;
+}
+
+template <typename T>
+typename Treap<T>::Node* Treap<T>::SearchParent(T data) {
+  Node* node = root;
+  Node* parent = root;
+  
+  if (root == nullptr || data == root->data) {
+    return nullptr;
+  }
+
+  while(node != nullptr) {
+    if (data > node->data) {
+      parent = node;
+      node = node->pright;
+    }
+    else if (data < node->data) {
+      parent = node;
+      node = node->pleft;
+    }
+    else if (data == node->data)
+      return parent;
+  }
+  return nullptr;
+}
+
+template <typename T>
+void Treap<T>::RemoveAt(T data) {
+  Node* node = SearchNode(data);
+  if (node == nullptr)
+    return;
+  Node* parent = SearchParent(data);
+  if (node->pleft == nullptr && node->pright == nullptr) {
+    if (parent == nullptr) {
+      delete root;
+      root = nullptr;
+    } else if (parent->pleft == node) {
+      delete parent->pleft;
+      parent->pleft = nullptr;
+    } else {
+      delete parent->pright;
+      parent->pright = nullptr;
+    }
+  }
+  else if (node->pleft == nullptr) {
+    if (parent == nullptr) {
+      root = node->pright;
+    } else if (parent->pleft == node) {
+      parent->pleft = node->pright;
+    } else {
+      parent->pright = node->pright;
+    }
+    delete node;
+  } else if (node->pright == nullptr) {
+    if (parent == nullptr) {
+      root = node->pleft;
+    } else if (parent->pleft == node) {
+      parent->pleft = node->pleft;
+    } else {
+      parent->pright = node->pleft;
+    }
+    delete node;
+  } else {
+    Node* minRight = node->pright;
+    while (minRight->pleft != nullptr) {
+      minRight = minRight->pleft;
+    }
+    T temp = minRight->data;
+    RemoveAt(minRight->data);
+    node->data = temp;
+  }
+}
+
+template <typename T>
+Treap<T>::~Treap() {
+  DestroyTree(root);
+}
+
+template <typename T>
+void Treap<T>::DestroyTree(Node* node) {
+  if (node != nullptr) {
+    DestroyTree(node->pleft);
+    DestroyTree(node->pright);
+    delete node;
+  }
+}
