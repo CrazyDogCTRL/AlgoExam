@@ -1,0 +1,30 @@
+//bi search
+#include <iostream>
+int main() {
+  int elem;
+  std::cin >> elem;
+  const int n = 5;
+  int arr[n]{1,2,3,4,5};
+  int L = 0;
+  int R = n - 1;
+  bool flag = false;
+  while (L < R - 1) {
+   int M = (L + R) / 2;
+    if (arr[M] > elem)
+      R = M;
+    else if (arr[M] < elem)
+      L = M;
+    else {
+      flag = true;
+      break;
+    }
+  }
+  if (flag || arr[L] == elem || arr[R] == elem) {
+    std::cout << "FOUNDED\n";
+    main();
+  }
+  else {
+    std::cout << "NOT FOUNDED\n";
+    main();
+  }
+}
