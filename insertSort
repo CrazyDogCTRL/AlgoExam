@@ -1,0 +1,22 @@
+//Сортировка вставками (insert)
+#include <iostream>
+template <typename T>
+void swap(T &a, T &b) {
+  T c = a;
+  a = b;
+  b = c;
+}
+int main() {
+  const int n = 9;
+  int arr[n] = {78,9,10,65,305,32,23,93,39};
+  for (int i = 0; i < n - 1; i++) {
+    int j = i + 1;
+    while (j > 0 && arr[j - 1] < arr[j]) {
+      swap(arr[j - 1], arr[j]);
+      j -= 1;
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    std::cout << arr[i] << "\n";
+  }
+}
