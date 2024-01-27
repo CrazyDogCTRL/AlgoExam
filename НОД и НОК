@@ -1,0 +1,16 @@
+//НОД и НОК
+#include <iostream>
+int main() {
+  int a, b;
+  std::cout << "Введите два числа: ";
+  std::cin >> a >> b;
+  int um = a * b;
+  while (a * b != 0) {
+    if (b > a)
+      b = b % a;
+    else
+      a = a % b;
+  }
+  std::cout << "НОД: " << a + b << "\n";
+  std::cout << "НОК: " << um / (a + b) << "\n";
+}
